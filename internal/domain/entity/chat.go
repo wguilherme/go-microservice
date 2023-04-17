@@ -14,14 +14,28 @@ type ChatConfig struct {
 }
 
 type Chat struct {
-	ID                   int
-	UserID               int
+	ID                   string
+	UserID               string
 	InitialSystemMessage *Message
 	Messages             []*Message
 	ErasedMessages       []*Message
 	Status               string
 	TokenUsage           int
 	Config               *ChatConfig
+}
+
+func (c *Chat) Validate() error {
+	if c.UserID == "" {
+		return errors.New("invalid user id")
+	}
+	if c.Status != "active" && c.Status != "ended" {
+		return errors.New("invalid status")
+	}
+	if c.Config.Temperature < 0 || c.Config.Temperature > 2 {
+		return errors.New("invalid temperature")
+	}
+	// more validations
+	return nil
 }
 
 func (c *Chat) AddMessage(m *Message) error {
