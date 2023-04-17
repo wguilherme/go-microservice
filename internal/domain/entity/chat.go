@@ -1,5 +1,7 @@
 package entity
 
+import "errors"
+
 type ChatConfig struct {
 	Model            *Model
 	Temperature      float32 // 0.0 - 1.0
@@ -20,4 +22,15 @@ type Chat struct {
 	Status               string
 	TokenUsage           int
 	Config               *ChatConfig
+}
+
+func (c *Chat) AddMessage(m *Message) error {
+	if c.Status == "ended" {
+		return errors.New("chat is ended. no more messages allowed")
+	}
+	for {
+		if c.Config.Model.GetMaxTokens() >= m.Model.GetMaxTokens()+c.TokenUsage {
+			c.Messages = append(c.Messages, m)
+		}
+	}
 }
