@@ -41,6 +41,10 @@ func (c *Chat) AddMessage(m *Message) error {
 	return nil
 }
 
+func (c *Chat) GetMessages() []*Message {
+	return c.Messages
+}
+
 func (c *Chat) RefreshTokenUsage() {
 	c.TokenUsage = 0
 	for m := range c.Messages {
