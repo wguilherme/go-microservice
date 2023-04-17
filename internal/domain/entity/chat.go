@@ -31,6 +31,19 @@ func (c *Chat) AddMessage(m *Message) error {
 	for {
 		if c.Config.Model.GetMaxTokens() >= m.Model.GetMaxTokens()+c.TokenUsage {
 			c.Messages = append(c.Messages, m)
+			c.RefreshTokenUsage()
+			break
 		}
+		c.ErasedMessages = append(c.ErasedMessages, c.Messages[0])
+		c.Messages = c.Messages[1:]
+		c.RefreshTokenUsage()
+	}
+	return nil
+}
+
+func (c *Chat) RefreshTokenUsage() {
+	c.TokenUsage = 0
+	for m := range c.Messages {
+		c.TokenUsage += c.Messages[m].GetQtdTokens()
 	}
 }
